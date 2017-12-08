@@ -1,6 +1,8 @@
 #ifndef PEG_H
 #define PEG_H
 
+#include "tuple.h"
+
 #include <array>
 #include <initializer_list>
 #include <sstream>
@@ -45,7 +47,7 @@ template <class E>
 struct ZeroOrMore {
   const E expr;
 
-  std::string repr() const { return expr.repr() + "*"; }
+  std::string repr() const { return "(" + expr.repr() + ")*"; }
 };
 template <class E> ZeroOrMore(E e) -> ZeroOrMore<E>;
 
@@ -53,7 +55,7 @@ template <class E>
 struct OneOrMore {
   const E expr;
 
-  std::string repr() const { return expr.repr() + "+"; }
+  std::string repr() const { return "(" + expr.repr() + ")+"; }
 };
 template <class E> OneOrMore(E e) -> OneOrMore<E>;
 
@@ -61,7 +63,7 @@ template <class E>
 struct Optional {
   const E expr;
 
-  std::string repr() const { return expr.repr() + "?"; }
+  std::string repr() const { return "(" + expr.repr() + ")?"; }
 };
 template <class E> Optional(E e) -> Optional<E>;
 
@@ -69,7 +71,7 @@ template <class E>
 struct And {
   const E expr;
 
-  std::string repr() const { return "&" + expr.repr(); }
+  std::string repr() const { return "&(" + expr.repr() + ")"; }
 };
 template <class E> And(E e) -> And<E>;
 
@@ -77,7 +79,7 @@ template <class E>
 struct Not {
   const E expr;
 
-  std::string repr() const { return "!" + expr.repr(); }
+  std::string repr() const { return "!(" + expr.repr() + ")"; }
 };
 template <class E> Not(E e) -> Not<E>;
 
@@ -101,17 +103,6 @@ struct Grammar {
   std::string repr() const;
 };
 template <class ... Rs> Grammar(std::string s, Rs... rules) -> Grammar<Rs...>;
-
-template<class F, class...Ts, std::size_t...Is>
-void for_each_in_tuple(const std::tuple<Ts...> & tuple, F func, std::index_sequence<Is...>){
-    using expander = int[];
-    (void)expander { 0, ((void)func(std::get<Is>(tuple)), 0)... };
-}
-
-template<class F, class...Ts>
-void for_each_in_tuple(const std::tuple<Ts...> & tuple, F func){
-    for_each_in_tuple(tuple, func, std::make_index_sequence<sizeof...(Ts)>());
-}
 
 template <class ... Rs>
 std::string Grammar<Rs...>::repr() const
