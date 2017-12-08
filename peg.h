@@ -39,7 +39,7 @@ struct Choice {
   const L left;
   const R right;
 
-  std::string repr() const { return left.repr() + " | " + right.repr(); }
+  std::string repr() const { return "(" + left.repr() + " | " + right.repr() + ")"; }
 };
 template <class L, class R> Choice(L l, R r) -> Choice<L, R>;
 

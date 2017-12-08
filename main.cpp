@@ -5,16 +5,46 @@
 
 int main()
 {
-  Grammar g{"start",
-    Rule{"start", Not{NonTerminal{"symbol"}}},
-    Rule{"symbol", Sequence{NonTerminal{"value"}, Terminal{"!"}}},
-    Rule{"value",
-      Choice{Terminal{"woo"}, Terminal{"the"}}
-    }
+  Grammar g{"Expr",
+    Rule{"Expr", NonTerminal{"Sum"}},
+    Rule{"Sum", Sequence{
+      NonTerminal{"Product"},
+      ZeroOrMore{Sequence{
+        Choice{Terminal{"+"}, Terminal{"-"}},
+        NonTerminal{"Product"}
+      }}
+    }},
+    Rule{"Product", Sequence{
+      NonTerminal{"Value"},
+      ZeroOrMore{Sequence{
+        Choice{Terminal{"*"}, Terminal{"/"}},
+        NonTerminal{"Value"}
+      }}
+    }},
+    Rule{"Value", Choice{
+      OneOrMore{NonTerminal{"Digit"}},
+      Sequence{
+        Terminal{"("}, Sequence{
+        NonTerminal{"Expr"},
+        Terminal{")"}
+      }}
+    }},
+    Rule{"Digit", Choice{
+      Terminal{"0"}, Choice{
+      Terminal{"1"}, Choice{
+      Terminal{"2"}, Choice{
+      Terminal{"3"}, Choice{
+      Terminal{"4"}, Choice{
+      Terminal{"5"}, Choice{
+      Terminal{"6"}, Choice{
+      Terminal{"7"}, Choice{
+      Terminal{"8"},
+      Terminal{"9"}
+    }}}}}}}}}}
   };
 
   std::cout << g.repr();
 
   Parser p{g};
-  std::cout << p.parse("th!", NonTerminal{"start"}).repr() << '\n';
+  std::cout << p.parse("(1+2*3+((88)/44))-025", NonTerminal{"Expr"}).repr() << '\n';
 }
