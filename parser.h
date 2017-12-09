@@ -28,6 +28,8 @@ template <class ... Rs>
 struct Parser {
   Grammar<Rs...> grammar;
 
+  Result parse(string_view sv);
+
   Result parse(string_view sv, Empty);
   Result parse(string_view sv, Terminal t);
   Result parse(string_view sv, NonTerminal nt);
@@ -63,6 +65,12 @@ std::string Result::repr() const
     case(ResultType::Failure):
       return "Failure";
   }
+}
+
+template <class ... Rs>
+Result Parser<Rs...>::parse(string_view sv)
+{
+  return parse(sv, NonTerminal{grammar.start});
 }
 
 template <class ... Rs>

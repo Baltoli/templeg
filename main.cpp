@@ -5,7 +5,7 @@
 
 int main()
 {
-  Grammar g{"Expr",
+  Parser p{Grammar{"Expr",
     Rule{"Expr", NonTerminal{"Sum"}},
     Rule{"Sum", Sequence{
       NonTerminal{"Product"},
@@ -41,10 +41,9 @@ int main()
       Terminal{"8"},
       Terminal{"9"}
     }}}}}}}}}}
-  };
+  }};
 
-  std::cout << g.repr();
+  std::cout << p.grammar.repr();
 
-  Parser p{g};
-  std::cout << p.parse("(1+2*3+((88)/44))-025", NonTerminal{"Expr"}).repr() << '\n';
+  std::cout << p.parse("(1+2*3+((88)/44))-025").repr() << '\n';
 }
